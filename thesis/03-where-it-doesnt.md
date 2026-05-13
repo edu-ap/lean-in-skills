@@ -18,7 +18,7 @@ This is the most-cited fallacy in formal-methods-for-AI discussions. Lean's forc
 
 Every rule, edge case, and refinement requires re-elaborating the Lean. The team needs at least one person who knows Lean well enough to extend the schema. Onboarding new contributors (human or model) becomes harder.
 
-In life-core today the only practising Lean-literate contributor is Eduardo. A formalisation that depends on him being present is single-pointed by construction. The formalisations chosen should either be small and stable enough to survive author absence, or come with documentation that lets a Lean-novice extend them with model assistance.
+In most production teams adopting this pattern, Lean-literate contributors are rare. A formalisation that depends on a single author is single-pointed by construction. The formalisations chosen should either be small and stable enough to survive author absence, or come with documentation that lets a Lean-novice extend them with model assistance.
 
 ## Reason 4: the cost of the encoding can exceed the cost of the rule
 

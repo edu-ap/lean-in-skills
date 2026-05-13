@@ -115,7 +115,7 @@ Issues and PRs welcome. The five-condition test in [`thesis/03-where-it-doesnt.m
 Items planned but not yet shipped:
 
 - **Cycle detection** for typed composition graphs (Pilot 1 extension; non-Mathlib fuel-bounded recursion is feasible).
-- **A worked example schema** for a generic public-skill structure (NDA-triager-style: GREEN / YELLOW / RED verdict with required-fields-per-verdict invariants).
+- **A worked example schema** for a generic verdict-style skill output (GREEN / YELLOW / RED rating with required-fields-per-rating invariants).
 - **A longer-form technical write-up:** *"Design-time vs runtime composability — when does each earn its keep?"* (TODO; not yet authored.)
 - **`bundle.py` exporter** for self-contained skill+runtime tarballs (for sharing skills to machines without the runtime installed).
 

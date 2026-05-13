@@ -42,7 +42,7 @@ Build passes  ⟺  AllReferencesKnown ∧ TypeCompatible
 
 ## Risks
 
-- IOType vocabulary is debatable. Resolution: start with the union of currently-declared inputs and outputs in life-core; refine when the first build fails on a real edge.
+- IOType vocabulary is debatable. Resolution: start with the union of currently-declared inputs and outputs in the host workspace; refine when the first build fails on a real edge.
 - Pre-commit hook latency. `lake build` on a small library is fast (~1s), but ingestion adds latency. Resolution: only re-run on SKILL.md changes, cache aggressively.
 - Existing SKILL.md files may not have complete frontmatter. Resolution: the build fails; we fix the SKILL.md files; this is the point.
 

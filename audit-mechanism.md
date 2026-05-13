@@ -1,6 +1,6 @@
 # Audit Mechanism Design
 
-How life-core skills get progressively Lean-enhanced over time without per-invocation latency cost.
+How skills in a host workspace get progressively Lean-enhanced over time without per-invocation latency cost.
 
 ## The four terminal states
 

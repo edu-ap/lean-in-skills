@@ -9,7 +9,7 @@ A Lean overlay on AI-skill design is only useful if it ships. This document is t
 │  Layer 3: Authoring surface (humans + Claude write here)       │
 │  - SKILL.md files                                              │
 │  - CLAUDE.md files                                             │
-│  - JSON artefacts (prd.json, cxdb.json, customer-intel JSONs)  │
+│  - JSON artefacts (prd.json, cxdb.json, domain-specific records) │
 │  - Documents (Markdown, DOCX, draft emails)                    │
 └────────────────────────────────────────────────────────────────┘
                             │
@@ -94,6 +94,6 @@ For claude-for-legal, the upstream-bound artefact is a `references/lean-verified
 - A self-contained Lean project (one decidable predicate, one state machine, one Mathlib `grind` proof).
 - A README that explains the pattern, not just the code.
 - A small synthetic example showing how it would slot into one of the existing plugins (probably `regulatory-legal` or `ai-governance-legal`, where multi-jurisdiction logic benefits most).
-- A note on the Eduardo-Anthropic toolchain alignment (v4.29.1, the `grind` improvements that landed in v4.29.0 specifically improve Aristotle-style proofs).
+- A note on toolchain alignment with Anthropic's Aristotle releases (v4.29.1, the `grind` improvements that landed in v4.29.0 specifically improve Aristotle-style proofs).
 
 The contribution is the pattern. The repo is the proof that the pattern shipped.
