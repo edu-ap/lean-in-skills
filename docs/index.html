@@ -64,24 +64,18 @@
 
 <section>
   <h2>Architecture at a glance</h2>
-  <div class="diagram">┌────────────────────────────────────────────────────────────────┐
-│  Authoring surface           AI / human writes structured     │
-│                              output (JSON, YAML, MD)          │
-└────────────────────────────────────────────────────────────────┘
-                            │
-                            │  Ingestion (Python → Lean instance)
-                            ▼
-┌────────────────────────────────────────────────────────────────┐
-│  Lean representation         Typed value with structural       │
-│                              invariants baked into types       │
-└────────────────────────────────────────────────────────────────┘
-                            │
-                            │  Verifier (lake build + by decide)
-                            ▼
-┌────────────────────────────────────────────────────────────────┐
-│  Verdict                     Pass/fail; failing theorem names  │
-│                              what's wrong                      │
-└────────────────────────────────────────────────────────────────┘</div>
+  <pre class="mermaid">
+flowchart TD
+    A["<b>Authoring surface</b><br/>AI or human writes structured output<br/>(JSON, YAML, MD)"]
+    B["<b>Lean representation</b><br/>Typed value with structural<br/>invariants baked into types"]
+    C["<b>Verdict</b><br/>Pass / fail; failing theorem<br/>names what's wrong"]
+    A -- "Ingestion<br/>Python → Lean instance" --> B
+    B -- "Verifier<br/>lake build + by decide" --> C
+    classDef boxStyle fill:#ffffff,stroke:#888888,stroke-width:1px,color:#1a1a1a,rx:6,ry:6
+    classDef centre fill:#eaf0fe,stroke:#2563eb,stroke-width:2px,color:#1a1a1a,rx:6,ry:6
+    class A,C boxStyle
+    class B centre
+  </pre>
   <p>Per-skill schemas live in each skill's folder and travel with it. The runtime (lakefile, toolchain pin, generic infrastructure) is shared. Bundles are portable; verifiers are auditable; non-conformant output is mechanically rejected at save time.</p>
 </section>
 
@@ -111,6 +105,15 @@
     </div>
   </div>
 </footer>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'neutral',
+    flowchart: { curve: 'basis', useMaxWidth: true, htmlLabels: true }
+  });
+</script>
 
 </body>
 </html>
