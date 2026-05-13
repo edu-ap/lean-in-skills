@@ -24,6 +24,30 @@ For that slice, a typed Lean schema plus a `by decide` proof beats prose guardra
 
 That's roughly 10% of typical AI-system guardrails by volume and 80% of operational risk by impact. The full case lives in [`thesis/`](thesis/).
 
+## Why design-time composability, not "let the LLM glue it together"
+
+There is a widely-held alternative position: composability is the LLM's responsibility at runtime. Each skill advertises what it does; the model figures out which to invoke and how to chain them. Many production agent systems take this approach today, and it works well at small N.
+
+It fails predictably as the skill catalogue grows. The failure modes are documented across the industry:
+
+- **Tool-selection lottery.** When N skills have semantic overlap, the same prompt yields different tool selections across runs. The LLM is making an effectively-random choice between near-equivalent options. ([a16z](https://a16z.com/a-deep-dive-into-mcp-and-the-future-of-ai-tooling/) on the workflow gap; [Barry Zhang at Anthropic](https://barryzhang.substack.com/p/making-peace-with-llm-non-determinism) on reducing non-determinism with code components.)
+- **Context-window bloat.** Every advertised skill consumes context budget. Tool definitions accumulate; the budget for *actual reasoning* shrinks. With 50+ skills, the model spends a measurable fraction of every turn re-deciding which tool to call.
+- **Cascading inconsistency.** A skill chosen on Monday may not be chosen on Tuesday for the same task. Audit trails become non-reproducible.
+- **Unverifiable outputs.** A skill that should cite sources, return a value in range, or carry a calibration rationale isn't checked at output time. The reader catches mistakes ad-hoc, or not at all.
+
+Design-time composability addresses each:
+
+| Failure | Design-time response in lean-in-skills |
+|---|---|
+| Tool-selection lottery | `composes:` field declares dependencies explicitly; type-checking rules out alternatives that don't fit |
+| Context-window bloat | Skills are organised into atomics → composites → workflows; the model picks at the level it needs and the rest collapses into a composition |
+| Cascading inconsistency | A skill's composition graph is a typed structure, not an LLM choice; same input → same execution path |
+| Unverifiable outputs | Typed schemas enforce `requires_source` / `requires_rationale` / range constraints; a `by decide` proof rejects malformed output at save time |
+
+This isn't a claim that runtime LLM composition is wrong everywhere. For exploratory work with a small, well-understood skill catalogue, it works. The argument is narrower: **at scale, with safety-critical outputs, the design-time approach earns its keep**. The runtime camp's elegant simplicity becomes operational unreliability. The design-time camp's syntax tax becomes mechanical correctness.
+
+The five-condition test in [`thesis/03-where-it-doesnt.md`](thesis/03-where-it-doesnt.md) is explicit about where each approach belongs. Most AI behaviour is perception and runtime-glue is fine. The slice we formalise is the slice where wrong-and-confident costs real money.
+
 ## How it works
 
 Three layers:
@@ -87,6 +111,15 @@ Built in 2026 inside a working AI-augmented engineering practice. The first thre
 
 Issues and PRs welcome. The five-condition test in [`thesis/03-where-it-doesnt.md`](thesis/03-where-it-doesnt.md) is the canonical filter: contributions that satisfy all five conditions are likely to land; contributions that satisfy fewer get more discussion. Domain-specific applied examples (your-domain-here schemas) are most valuable as a `pilots/` addition or a separate-repo demonstration linked from this README.
 
+## Roadmap
+
+Items planned but not yet shipped:
+
+- **Cycle detection** for typed composition graphs (Pilot 1 extension; non-Mathlib fuel-bounded recursion is feasible).
+- **A worked example schema** for a generic public-skill structure (NDA-triager-style: GREEN / YELLOW / RED verdict with required-fields-per-verdict invariants).
+- **A longer-form technical write-up:** *"Design-time vs runtime composability — when does each earn its keep?"* (TODO; not yet authored.)
+- **`bundle.py` exporter** for self-contained skill+runtime tarballs (for sharing skills to machines without the runtime installed).
+
 ## License
 
 Apache 2.0. See [LICENSE](LICENSE).
@@ -97,5 +130,5 @@ Apache 2.0. See [LICENSE](LICENSE).
 - Lean Copilot (proof suggestion plugin; complementary)
 - AlphaProof (proof generation; different problem)
 - LiquidHaskell (refinement types in another language; conceptually parallel)
-- agentskills.io and the Agent Skills spec (where the schema patterns may eventually be referenced)
+- agentskills.io and the Agent Skills spec (related design-philosophy space)
 - anthropics/claude-for-legal (a domain-specific application of skill patterns; this repo's patterns can be applied there)
