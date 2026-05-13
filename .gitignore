@@ -1,0 +1,12 @@
+# Per-skill schemas are vendored here at verify time by skill check.py runs.
+# The canonical copies live in the skill folders that own them.
+LeanInSkills/GameAnalysis.lean
+LeanInSkills/PRDSchema.lean
+LeanInSkills/ArgumentSchema.lean
+LeanInSkills/Vendored/
+
+# Generated instance files (one per verify run).
+LeanInSkills/Generated/
+
+# Build artefacts.
+.lake/

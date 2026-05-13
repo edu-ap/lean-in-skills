@@ -1,0 +1,49 @@
+# 02. Where it helps
+
+The slice where Lean adds real precision satisfies three conditions simultaneously:
+
+1. **Decidable.** The rule maps to a function `X → Bool` or `X → Prop` whose truth value is computable in finite time.
+2. **High-stakes.** A wrong outcome costs more than the engineering effort of formalising the rule.
+3. **Verifier in the loop.** A build step, pre-commit hook, CI check, or pre-tool-call hook can actually run the verifier against the real artefact at the right moment.
+
+When all three hold, Lean replaces an aspirational rule with a build-time invariant. When fewer than three hold, Lean is aesthetic.
+
+## Slice 1: compositional graphs
+
+Skills compose other skills. The composition is today a YAML string that nothing checks. In Lean the composition is a typed reference whose producer-output and consumer-input types must unify.
+
+| Property | Today | With Lean |
+|---|---|---|
+| Renaming a skill | Silent breakage in every consumer | Compile error at every consumer |
+| Changing an output type | Downstream consumers silently get the new shape | Compile error until consumers are updated |
+| Reference to a deleted skill | Discovered when the skill is invoked, often in production | Caught at commit time |
+
+The Lean overlay turns the skills directory into a typed graph. Pre-commit ingestion is a small Python step that translates SKILL.md frontmatter into Lean source.
+
+## Slice 2: safety allowlists
+
+A predicate `isAllowed : SubProcessor → Bool` over a finite set has Lean's killer feature: `decide`. Documents claiming sub-processors outside the allowlist fail a build check. The allowlist is editable in one place; consumers cannot drift.
+
+The 2026-02 incident where InfoSec questionnaires drifted on sub-processor claims is the kind of thing this catches structurally rather than by reader vigilance. Eduardo's testing-over-features priority maps directly onto this case.
+
+## Slice 3: state machines
+
+Lifecycles like Slack-draft → Reviewed → Approved → Posted are inductive types in Lean. Illegal transitions are unrepresentable. A pre-tool-call hook consults the type before executing a send.
+
+The current English rule ("Treat silence as 'don't proceed'") relies on the reader being careful. A type relies on the type checker. The 30-second cost of formalisation is paid back the first time a future Claude session would have posted an unapproved draft and is now mechanically blocked.
+
+## Slice 4: schema invariants on JSON artefacts
+
+`prd.json` is the canonical example, already proven by `lean-prd`. Other candidates:
+
+- `cxdb.json` (CXDB rules: every rule must have a reason and an applicability tag)
+- `marketplace.json` in claude-for-legal (every plugin entry must match the plugin's `.claude-plugin/plugin.json`)
+- Customer-intel JSON schemas (every entry must have a source citation tag from the canonical vocabulary)
+
+Each is a place where the JSON is consumed by multiple readers and drift between readers is a known failure mode.
+
+## Where Lean does not help, even when decidable
+
+Decidability alone is not enough. If the verifier cannot run against the real artefact at the right moment, the Lean formalisation is a comment. The "verifier in the loop" condition is what separates effective formalisation from type-theatre.
+
+Continue to `03-where-it-doesnt.md` for the negative case.
