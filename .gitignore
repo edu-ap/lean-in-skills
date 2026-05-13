@@ -10,3 +10,6 @@ LeanInSkills/Generated/
 
 # Build artefacts.
 .lake/
+
+# Private working doc — keep out of the public repo.
+lessons-learned.md
