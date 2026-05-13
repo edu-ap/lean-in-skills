@@ -74,7 +74,7 @@ metadata:
   exportable: false
   lean_audit:
     status: audited-no-benefit
-    last_run: 2026-05-13
+    last_run: 2026-01-15  # YYYY-MM-DD when last audited
     disqualifying_condition: "the auditor itself doesn't need a Lean overlay because its decisions are explicitly subjective"
 ```
 
