@@ -38,7 +38,7 @@ The current English rule ("Treat silence as 'don't proceed'") relies on the read
 
 - `cxdb.json` (CXDB rules: every rule must have a reason and an applicability tag)
 - `marketplace.json` in claude-for-legal (every plugin entry must match the plugin's `.claude-plugin/plugin.json`)
-- Customer-intel JSON schemas (every entry must have a source citation tag from the canonical vocabulary)
+- Research-output or intelligence-aggregation JSON schemas (every entry must have a source citation tag from the canonical vocabulary)
 
 Each is a place where the JSON is consumed by multiple readers and drift between readers is a known failure mode.
 
