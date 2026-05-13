@@ -84,7 +84,6 @@ lake build
 | [`audit-mechanism.md`](audit-mechanism.md) | The `lean_audit.status` tag system, four terminal states, and how skill audits happen without contaminating skill execution |
 | [`pilots/`](pilots/) | Pilots scaffolded: `skill-graph` (typed skill-composition graph), `draft-lifecycle` (state machine for sends) |
 | [`LeanInSkills/`](LeanInSkills/) | Shared Lean modules. Per-skill schemas live in each skill's folder and get vendored at verify time |
-| [`lessons-learned.md`](lessons-learned.md) | What we discovered while building this and shipping the first three formally-enhanced skills |
 
 ## Status
 
