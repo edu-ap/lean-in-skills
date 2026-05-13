@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Why design-time composability · lean-in-skills</title>
+<meta name="description" content="The case against runtime LLM glue: tool-selection lottery, context-window bloat, cascading inconsistency, and unverifiable outputs." />
+<link rel="stylesheet" href="style.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='15' fill='%232563eb'/%3E%3Ctext x='50' y='66' font-family='monospace' font-size='52' fill='white' text-anchor='middle' font-weight='600'%3Eλ%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+<nav class="top">
+  <div class="inner">
+    <div class="brand"><a href="/">lean-in-skills</a></div>
+    <div class="links">
+      <a href="/">Home</a>
+      <a href="/why.html" class="active">Why</a>
+      <a href="/about.html">About</a>
+      <a href="https://github.com/edu-ap/lean-in-skills" target="_blank" rel="noopener">GitHub →</a>
+    </div>
+  </div>
+</nav>
+
+<main class="narrow">
+
+<section style="border: none; padding-top: 2rem;">
+  <h2>Why design-time composability, not "let the LLM glue it together"</h2>
+  <p class="muted">The position this project defends, and the alternative it answers.</p>
+</section>
+
+<section>
+  <h3>The alternative position</h3>
+  <p>There is a widely-held view that composability is the LLM's responsibility at runtime. Each skill advertises what it does; the model figures out which to invoke and how to chain them. Many production agent systems take this approach today, and it works well at small N.</p>
+  <p>It fails predictably as the skill catalogue grows. The failure modes are documented across the industry:</p>
+</section>
+
+<section>
+  <h3>Four failure modes of runtime LLM composition at scale</h3>
+
+  <h4 style="margin-top: 1.5rem; font-size: 1rem;">1. Tool-selection lottery</h4>
+  <p>When N skills have semantic overlap, the same prompt yields different tool selections across runs. The LLM is making an effectively-random choice between near-equivalent options.</p>
+  <p class="subtle" style="font-size: 0.88rem;">
+    <a href="https://a16z.com/a-deep-dive-into-mcp-and-the-future-of-ai-tooling/" target="_blank" rel="noopener">a16z on the MCP workflow gap</a>;
+    <a href="https://barryzhang.substack.com/p/making-peace-with-llm-non-determinism" target="_blank" rel="noopener">Barry Zhang at Anthropic on reducing non-determinism with code components</a>.
+  </p>
+
+  <h4 style="margin-top: 1.5rem; font-size: 1rem;">2. Context-window bloat</h4>
+  <p>Every advertised skill consumes context budget. Tool definitions accumulate; the budget for <em>actual reasoning</em> shrinks. With 50+ skills, the model spends a measurable fraction of every turn re-deciding which tool to call rather than doing the user's task.</p>
+
+  <h4 style="margin-top: 1.5rem; font-size: 1rem;">3. Cascading inconsistency</h4>
+  <p>A skill chosen on Monday may not be chosen on Tuesday for the same task. Audit trails become non-reproducible. Production incidents become impossible to retrace because the execution path was non-deterministic.</p>
+
+  <h4 style="margin-top: 1.5rem; font-size: 1rem;">4. Unverifiable outputs</h4>
+  <p>A skill that should cite sources, return a value in range, or carry a calibration rationale isn't checked at output time. The reader catches mistakes ad-hoc, or not at all. The first signal of failure is often a downstream consumer breaking.</p>
+</section>
+
+<section>
+  <h3>Two positions, side by side</h3>
+  <div class="compare-grid">
+    <div class="compare-card runtime">
+      <h4>Runtime LLM glue</h4>
+      <ul>
+        <li>Skills advertise themselves; LLM chooses dynamically</li>
+        <li>Composition is implicit, decided per-invocation</li>
+        <li>Elegant for small N; non-deterministic at large N</li>
+        <li>No build-time verification of output integrity</li>
+        <li>Context budget grows linearly with tool count</li>
+        <li>Audit trails non-reproducible</li>
+      </ul>
+    </div>
+    <div class="compare-card design">
+      <h4>Design-time typed composition</h4>
+      <ul>
+        <li>Skills declare typed dependencies via <code>composes:</code></li>
+        <li>Composition is explicit, decided at design time</li>
+        <li>Deterministic at any N</li>
+        <li>Typed schemas + <code>by decide</code> reject malformed output at save time</li>
+        <li>Skills organised into atomics → composites → workflows; pick the level you need</li>
+        <li>Audit trail is the composition graph itself</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h3>How lean-in-skills addresses each failure mode</h3>
+  <table class="std">
+    <thead>
+      <tr>
+        <th>Failure mode</th>
+        <th>Design-time response</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Tool-selection lottery</td>
+        <td><code>composes:</code> field declares dependencies explicitly; type-checking rules out alternatives that don't fit</td>
+      </tr>
+      <tr>
+        <td>Context-window bloat</td>
+        <td>Skills organised into atomics → composites → workflows; the model picks at the level it needs and the rest collapses into a composition</td>
+      </tr>
+      <tr>
+        <td>Cascading inconsistency</td>
+        <td>A skill's composition graph is a typed structure, not an LLM choice; same input → same execution path</td>
+      </tr>
+      <tr>
+        <td>Unverifiable outputs</td>
+        <td>Typed schemas enforce <code>requires_source</code> / <code>requires_rationale</code> / range constraints; <code>by decide</code> proof rejects malformed output at save time</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h3>The boundary</h3>
+  <p>This isn't a claim that runtime LLM composition is wrong everywhere. For exploratory work with a small, well-understood skill catalogue, it works. The argument is narrower:</p>
+  <blockquote class="thesis-callout" style="border-left-color: var(--accent); background: var(--accent-soft); margin: 1.2rem 0; padding: 1rem 1.5rem;">
+    At scale, with safety-critical outputs, the design-time approach earns its keep. The runtime camp's elegant simplicity becomes operational unreliability. The design-time camp's syntax tax becomes mechanical correctness.
+  </blockquote>
+  <p>The five-condition test in the <a href="https://github.com/edu-ap/lean-in-skills/blob/main/thesis/03-where-it-doesnt.md" target="_blank" rel="noopener">"where it doesn't help" thesis doc</a> is explicit about where each approach belongs. Most AI behaviour is perception and runtime-glue is fine. The slice we formalise is the slice where wrong-and-confident costs real money.</p>
+</section>
+
+<section>
+  <h3>How verification actually runs</h3>
+  <p>A worked example. A skill produces a structured output (here, a planning checklist with verdict + confidence per item). The verifier:</p>
+  <pre><code># Skill produces output JSON, saves it
+$ /game-theory "Should we negotiate or walk away?"
+# (output saved to game-analysis.json)
+
+# Verifier vendors the schema and runs lake build
+$ python3 .claude/skills/_composite/game-theory/check.py game-analysis.json
+Vendored schema: projects/dev/lean-in-skills/LeanInSkills/GameAnalysis.lean
+Generated instance: projects/dev/lean-in-skills/LeanInSkills/Generated/GameAnalysisInstance.lean
+VERIFIED: GameAnalysisJSON satisfies structural invariants</code></pre>
+
+  <p>And the failure case, where a checklist item has confidence below 0.75 but no calibration note:</p>
+  <pre><code>$ python3 .claude/skills/_composite/game-theory/check.py malformed.json
+VERIFICATION FAILED: malformed.json
+  error: LeanInSkills/Generated/GameAnalysisInstance.lean:29:53:
+    Tactic `decide` proved that the proposition
+    gameAnalysis.wellFormed = true
+    is false</code></pre>
+
+  <p>The build fails. The output is not allowed to be reported as complete until the failing invariant is fixed.</p>
+</section>
+
+<section>
+  <h3>Further reading</h3>
+  <ul>
+    <li><a href="https://github.com/edu-ap/lean-in-skills/tree/main/thesis" target="_blank" rel="noopener">The full four-doc thesis</a></li>
+    <li><a href="https://github.com/edu-ap/lean-in-skills/blob/main/audit-mechanism.md" target="_blank" rel="noopener">The audit lifecycle and discoverability pattern</a></li>
+    <li><a href="https://github.com/edu-ap/lean-in-skills/tree/main/pilots" target="_blank" rel="noopener">Pilots scaffolded: skill-graph, draft-lifecycle</a></li>
+    <li><a href="https://github.com/edu-ap/lean-in-skills/blob/main/references/related-work.md" target="_blank" rel="noopener">Related work: Aristotle, Lean Copilot, AlphaProof, LiquidHaskell</a></li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  <div class="inner">
+    <div>
+      © 2026 Eduardo Aguilar Pelaez. Licensed under
+      <a href="https://github.com/edu-ap/lean-in-skills/blob/main/LICENSE" target="_blank" rel="noopener">Apache 2.0</a>.
+    </div>
+    <div>
+      <a href="https://github.com/edu-ap/lean-in-skills" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="/about.html">About</a> ·
+      <a href="/">Home</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

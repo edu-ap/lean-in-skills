@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>lean-in-skills · Where Lean 4 stops being type-theatre</title>
+<meta name="description" content="Typed schemas plus a verifier-in-the-loop for AI skill outputs. Pragmatic formal methods for AI systems." />
+<link rel="stylesheet" href="style.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='15' fill='%232563eb'/%3E%3Ctext x='50' y='66' font-family='monospace' font-size='52' fill='white' text-anchor='middle' font-weight='600'%3Eλ%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+<nav class="top">
+  <div class="inner">
+    <div class="brand"><a href="/">lean-in-skills</a></div>
+    <div class="links">
+      <a href="/" class="active">Home</a>
+      <a href="/why.html">Why</a>
+      <a href="/about.html">About</a>
+      <a href="https://github.com/edu-ap/lean-in-skills" target="_blank" rel="noopener">GitHub →</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<div class="hero">
+  <h1>Where Lean 4 stops being type-theatre</h1>
+  <p class="tagline">Typed schemas plus a verifier-in-the-loop for AI skill outputs. Pragmatic formal methods for AI systems, not the comprehensive kind.</p>
+
+  <div class="thesis-callout">
+    Lean replaces prose for the slice that is decidable, high-stakes, has a verifier in the loop, survives author absence, and has a read-to-verify ratio that justifies the syntax tax.
+  </div>
+
+  <div class="cta-row">
+    <a class="cta" href="/why.html">Read the thesis</a>
+    <a class="cta secondary" href="https://github.com/edu-ap/lean-in-skills" target="_blank" rel="noopener">View on GitHub</a>
+  </div>
+</div>
+
+<section>
+  <h2>What this is</h2>
+  <p>A small Lean 4 library and a methodology for the narrow slice where formal methods earn their keep in AI-system design.</p>
+  <p>Three conditions, all required:</p>
+  <ul>
+    <li>The skill produces a structured output (JSON, frontmatter, a typed record).</li>
+    <li>The output has invariants you care about (required fields, consistent enums, no dead references, evidence-or-explicit-self-attestation for any "done" state).</li>
+    <li>A verifier can actually run against real outputs at the right moment (pre-commit hook, post-skill-invocation check, CI step).</li>
+  </ul>
+  <p>For that slice, a typed Lean schema plus a <code>by decide</code> proof beats prose guardrails. Outside that slice, prose wins. This project is the discipline of telling them apart.</p>
+</section>
+
+<section>
+  <h2>Who this is for</h2>
+  <div class="audience">
+    <span class="pill">Engineering leaders building production AI systems</span>
+    <span class="pill">Formal-methods practitioners curious about AI applications</span>
+    <span class="pill">AI infrastructure builders</span>
+    <span class="pill">The design-time-composability camp</span>
+    <span class="pill">Anyone fighting LLM non-determinism at scale</span>
+  </div>
+  <p class="muted" style="margin-top: 1rem; font-size: 0.92rem;">If you build agent systems with five tools, prose guardrails are fine and this overlay is type-theatre. If you build with fifty and care about safety-critical outputs, the syntax tax pays back.</p>
+</section>
+
+<section>
+  <h2>Architecture at a glance</h2>
+  <div class="diagram">┌────────────────────────────────────────────────────────────────┐
+│  Authoring surface           AI / human writes structured     │
+│                              output (JSON, YAML, MD)          │
+└────────────────────────────────────────────────────────────────┘
+                            │
+                            │  Ingestion (Python → Lean instance)
+                            ▼
+┌────────────────────────────────────────────────────────────────┐
+│  Lean representation         Typed value with structural       │
+│                              invariants baked into types       │
+└────────────────────────────────────────────────────────────────┘
+                            │
+                            │  Verifier (lake build + by decide)
+                            ▼
+┌────────────────────────────────────────────────────────────────┐
+│  Verdict                     Pass/fail; failing theorem names  │
+│                              what's wrong                      │
+└────────────────────────────────────────────────────────────────┘</div>
+  <p>Per-skill schemas live in each skill's folder and travel with it. The runtime (lakefile, toolchain pin, generic infrastructure) is shared. Bundles are portable; verifiers are auditable; non-conformant output is mechanically rejected at save time.</p>
+</section>
+
+<section>
+  <h2>Start here</h2>
+  <ul>
+    <li><a href="/why.html">Why design-time over runtime LLM-glue</a> — the philosophical position and the failure modes it addresses</li>
+    <li><a href="https://github.com/edu-ap/lean-in-skills/tree/main/thesis" target="_blank" rel="noopener">The four-doc thesis</a> on GitHub: why-not-prose / where-it-helps / where-it-doesn't / pragmatic-architecture</li>
+    <li><a href="https://github.com/edu-ap/lean-in-skills#how-it-works" target="_blank" rel="noopener">How it works</a> — README walkthrough of the three-layer architecture</li>
+    <li><a href="https://github.com/edu-ap/lean-in-skills/blob/main/audit-mechanism.md" target="_blank" rel="noopener">Audit lifecycle</a> — the four terminal states and the discoverability pattern for AI agents</li>
+    <li><a href="/about.html">About the project</a></li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  <div class="inner">
+    <div>
+      © 2026 Eduardo Aguilar Pelaez. Licensed under
+      <a href="https://github.com/edu-ap/lean-in-skills/blob/main/LICENSE" target="_blank" rel="noopener">Apache 2.0</a>.
+    </div>
+    <div>
+      <a href="https://github.com/edu-ap/lean-in-skills" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="/about.html">About</a> ·
+      <a href="/why.html">Why</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
